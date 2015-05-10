@@ -14,6 +14,10 @@ import serverconnect.KMLgenerator;
 
 
 public class EventKMLPanel extends JPanel implements ActionListener{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTextField eventTxt;
 	private JLabel eventLbl;
 	private JButton createKmlTimebtn,createKmlPathbtn;

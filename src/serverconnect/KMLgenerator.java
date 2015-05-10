@@ -2,9 +2,7 @@ package serverconnect;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,12 +15,10 @@ import de.micromata.opengis.kml.v_2_2_0.*;
 public class KMLgenerator {
 	private String URL,path,event,user;
 	private boolean readSucceed;
-	private Date d;
 	public KMLgenerator(String _URL,String _path){
 		URL = _URL;
 		readSucceed=true;
 		path=_path;
-		d = new Date();
 	}
 	
 	public boolean createKMLPath(){
@@ -130,7 +126,6 @@ public class KMLgenerator {
 			File f = new File(path+"/"+event+"_"+user+"_"+timeStamp+"_OnlyPath.kml");
 			kml.marshal(f);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
@@ -197,7 +192,6 @@ public class KMLgenerator {
 			File f = new File(path+"/"+event+"_"+user+"_"+timeStamp+"_WithTimeStamp.kml");
 			kml.marshal(f);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
@@ -206,12 +200,10 @@ public class KMLgenerator {
 	}
 	
 	public void setEvent(String event) {
-		// TODO Auto-generated method stub
 		this.event=event;
 	}
 
 	public void setUser(String user) {
-		// TODO Auto-generated method stub
 		this.user=user;
 	}
 	
@@ -259,11 +251,6 @@ public class KMLgenerator {
 		            return false;
 		        if (getClass() != obj.getClass())
 		            return false;
-		        final EventDate o = (EventDate)obj;
-			/*	if(!time.equals(o.time))return false;
-				if(!date.equals(o.time))return false;
-				if(o.time==null || o.date==null || time==null || date==null)return false;
-			*/
 				return this.compareTo(obj)==0;
 		 }
 		
