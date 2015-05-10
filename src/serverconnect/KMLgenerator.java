@@ -2,6 +2,9 @@ package serverconnect;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -24,35 +27,20 @@ public class KMLgenerator {
 	
 	public boolean createKMLPath(){
 		
-		Map<String,LatLng> sortedLatLngs = readData();
-		
+		Map<EventDate,LatLng> sortedLatLngs = readData();
 		if(!readSucceed)return false;
-		
 		return createKMLPath(sortedLatLngs);
 		
 	}
 	
-	private class LatLng{
-		double lat,lng;
-		private LatLng(double _lat,double _lng){
-			lat=_lat;
-			lng = _lng;
-		}
-		public double getLat() {
-			return lat;
-		}
-		public double getLng() {
-			return lng;
-		}
-		@Override
-		public String toString() {
-			return "lat:"+lat+",Lng:"+lng;
-		}
-		
+	public boolean createKMLTimeStamp(){
+		Map<EventDate,LatLng> sortedLatLngs = readData();
+		if(!readSucceed)return false;
+		return createKMLTimeStamp(sortedLatLngs);
 	}
 	
-	private Map<String,LatLng> readData(){
-		Map<String,LatLng> sortedLatLngs = new TreeMap<String,LatLng>();
+	private Map<EventDate,LatLng> readData(){
+		Map<EventDate,LatLng> sortedLatLngs = new TreeMap<EventDate,LatLng>();
 		try {
 			JSONObject jsonHistory = JsonReader.readJsonFromUrl(URL);
 			JSONArray jsonArray = jsonHistory.getJSONArray("event");
@@ -65,23 +53,24 @@ public class KMLgenerator {
 						continue;
 					}
 					String time = jsonObj.getString("time");
-                    //time = time.replace(":","");
+					String date = jsonObj.getString("date");
+
 					LatLng latLng = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
-					//System.out.println("Time : "+time+",latlng : "+latLng.toString());
-					// Adds sailor's data to TreeMap.
-					sortedLatLngs.put(time, latLng);
+					EventDate eventDate = new EventDate(time, date);
+					sortedLatLngs.put(eventDate, latLng);
 			}
             
 		}
 		catch (Exception e) {
 			 readSucceed=false;
+			 e.printStackTrace();
 		}
 		return sortedLatLngs;
 	}
 
-	private boolean createKMLPath(Map<String,LatLng> sortedLatLngs){
-		Iterator<Map.Entry<String, LatLng>> i = sortedLatLngs.entrySet().iterator();
-		Map.Entry<String, LatLng> entry = (Map.Entry<String, LatLng>) i.next();
+	private boolean createKMLPath(Map<EventDate,LatLng> sortedLatLngs){
+		Iterator<Map.Entry<EventDate, LatLng>> i = sortedLatLngs.entrySet().iterator();
+		Map.Entry<EventDate, LatLng> entry = (Map.Entry<EventDate, LatLng>) i.next();
 		
 		Kml kml = new Kml();
 		Document doc = kml.createAndSetDocument();
@@ -123,11 +112,13 @@ public class KMLgenerator {
 		
 		
 		while(i.hasNext()){
-			entry = (Map.Entry<String, LatLng>) i.next();
+			entry = (Map.Entry<EventDate, LatLng>) i.next();
+			/*
 			System.out.println();
 			System.out.print(entry.getKey()+",");
 			System.out.print(entry.getValue().getLat()+",");
 			System.out.print(entry.getValue().getLng());
+			*/
 			if(!i.hasNext())break;
 			lineString.addToCoordinates(entry.getValue().getLng(), entry.getValue().getLat());
 			
@@ -135,7 +126,9 @@ public class KMLgenerator {
 		doc.createAndAddPlacemark().withName("TO").withStyleUrl("#"+style1.getId()).createAndSetPoint()
 		.addToCoordinates(entry.getValue().getLng(), entry.getValue().getLat());
 		try {
-			kml.marshal(new File(path+"/KML_"+user+"_"+event+"_"+d.getTime()+".kml"));
+			String timeStamp = new SimpleDateFormat("ddMMyy_HHmmss").format(new Date());
+			File f = new File(path+"/"+event+"_"+user+"_"+timeStamp+"_OnlyPath.kml");
+			kml.marshal(f);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -144,6 +137,74 @@ public class KMLgenerator {
 		return true;
 	}
 
+	private boolean createKMLTimeStamp(Map<EventDate,LatLng> sortedLatLngs){
+		Iterator<Map.Entry<EventDate, LatLng>> i = sortedLatLngs.entrySet().iterator();
+		Map.Entry<EventDate, LatLng> entry = (Map.Entry<EventDate, LatLng>) i.next();
+		String when="";
+		
+		Kml kml = new Kml();
+		Document doc = kml.createAndSetDocument();
+		doc.setName("Path");
+		doc.setDescription("Event# : "+event+" , Sailor : "+user);
+		
+		//style 1
+		Style style1 = doc.createAndAddStyle();
+		style1.setId("style1");
+		IconStyle ics1 = style1.createAndSetIconStyle();
+		ics1.setScale(1);
+		ics1.createAndSetIcon().setHref("http://maps.google.com/mapfiles/kml/paddle/grn-blank.png");
+		
+		//style 2
+		Style style2 = doc.createAndAddStyle();
+	    style2.setId("style2");
+		IconStyle ics2 = style2.createAndSetIconStyle();
+		ics2.setScale(1);
+		ics2.createAndSetIcon().setHref("http://maps.google.com/mapfiles/kml/paddle/wht-blank.png");
+		
+		//style 3
+		Style style3 = doc.createAndAddStyle();
+	    style3.setId("style3");
+		IconStyle ics3 = style3.createAndSetIconStyle();
+		ics3.setScale(1);
+		ics3.createAndSetIcon().setHref("http://maps.google.com/mapfiles/kml/paddle/red-blank.png");
+		
+		Placemark timeMarks = doc.createAndAddPlacemark();
+		timeMarks.setName("FROM");
+		when=entry.getKey().getDate()+"T"+entry.getKey().getTime()+"Z";
+		timeMarks.createAndSetTimeStamp().setWhen(when);
+		timeMarks.setStyleUrl("#"+style1.getId());
+		timeMarks.createAndSetPoint().addToCoordinates(entry.getValue().getLng(), entry.getValue().getLat());
+		
+		while(i.hasNext()){
+			entry = (Map.Entry<EventDate, LatLng>) i.next();
+			if(!i.hasNext())break;
+			timeMarks = doc.createAndAddPlacemark();
+			when=entry.getKey().getDate()+"T"+entry.getKey().getTime()+"Z";
+			timeMarks.createAndSetTimeStamp().setWhen(when);
+			timeMarks.setStyleUrl("#"+style2.getId());
+			timeMarks.createAndSetPoint().addToCoordinates(entry.getValue().getLng(), entry.getValue().getLat());
+		}
+		
+		timeMarks = doc.createAndAddPlacemark();
+		timeMarks.setName("TO");
+		when=entry.getKey().getDate()+"T"+entry.getKey().getTime()+"Z";
+		timeMarks.createAndSetTimeStamp().setWhen(when);
+		timeMarks.setStyleUrl("#"+style3.getId());
+		timeMarks.createAndSetPoint().addToCoordinates(entry.getValue().getLng(), entry.getValue().getLat());
+		
+		try {
+			String timeStamp = new SimpleDateFormat("ddMMyy_HHmmss").format(new Date());
+			File f = new File(path+"/"+event+"_"+user+"_"+timeStamp+"_WithTimeStamp.kml");
+			kml.marshal(f);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+		
+	}
+	
 	public void setEvent(String event) {
 		// TODO Auto-generated method stub
 		this.event=event;
@@ -152,5 +213,72 @@ public class KMLgenerator {
 	public void setUser(String user) {
 		// TODO Auto-generated method stub
 		this.user=user;
+	}
+	
+	private class LatLng{
+		double lat,lng;
+		private LatLng(double _lat,double _lng){
+			lat=_lat;
+			lng = _lng;
+		}
+		public double getLat() {
+			return lat;
+		}
+		public double getLng() {
+			return lng;
+		}
+		@Override
+		public String toString() {
+			return "lat:"+lat+",Lng:"+lng;
+		}
+	}
+	
+	private class EventDate implements Comparable<Object>{
+		String time,date;
+		private EventDate(String _time,String _date){
+			time=_time;
+			date=_date;
+		}
+		public String getTime() {
+			return time;
+		}
+		public String getDate() {
+			return date;
+		}
+		
+		@Override
+		public String toString() {
+			
+			return "Time : "+time+" , Date : "+date;
+		}
+		@Override
+		 public boolean equals(Object obj) {
+		        if (this == obj)
+		            return true;
+		        if (obj == null)
+		            return false;
+		        if (getClass() != obj.getClass())
+		            return false;
+		        final EventDate o = (EventDate)obj;
+			/*	if(!time.equals(o.time))return false;
+				if(!date.equals(o.time))return false;
+				if(o.time==null || o.date==null || time==null || date==null)return false;
+			*/
+				return this.compareTo(obj)==0;
+		 }
+		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+		    int result = 1;
+		    result = prime * result + ((time == null) ? 0 : time.hashCode());
+		    result = prime * result + Integer.parseInt(time.replaceAll(":", ""));
+		    return result;
+		}
+		@Override
+		public int compareTo(Object o) {
+			return Integer.parseInt(time.replaceAll(":", ""))-Integer.parseInt(((EventDate)o).time.replaceAll(":", ""));
+		}
+
 	}
 }

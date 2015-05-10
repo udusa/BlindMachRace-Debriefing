@@ -66,7 +66,7 @@ public class EventKMLPanel extends JPanel implements ActionListener{
 		g.setEvent(event);
 		g.setUser(user);
 		if(e.getActionCommand().equals(createKmlTimebtn.getText())){
-			
+			succeed = g.createKMLTimeStamp();
 		}else{
 			succeed = g.createKMLPath();
 		}
@@ -75,13 +75,14 @@ public class EventKMLPanel extends JPanel implements ActionListener{
 			final String message = "KML Creation Succeed!\n";
 			    JOptionPane.showMessageDialog(new JFrame(), message, "Dialog",
 			        JOptionPane.INFORMATION_MESSAGE);
+			    //System.exit(0);    
 		}else{
 			final String message = "KML Creation Fail!\n"
 			        + "Please Cheack Infornation Entered\n";
 			    JOptionPane.showMessageDialog(new JFrame(), message, "Dialog",
 			        JOptionPane.ERROR_MESSAGE);
 		}
-		//System.exit(0);
+		
 	}
 	
 	private String chooseFile(){
