@@ -11,18 +11,47 @@ import org.json.*;
 
 import de.micromata.opengis.kml.v_2_2_0.*;
 
-public class GetPathKML {
+public class KMLgenerator {
 	private String URL,path,event,user;
 	private boolean readSucceed;
 	private Date d;
-	public GetPathKML(String _URL,String _path){
+	public KMLgenerator(String _URL,String _path){
 		URL = _URL;
 		readSucceed=true;
 		path=_path;
 		d = new Date();
 	}
 	
-	public boolean getData(){
+	public boolean createKMLPath(){
+		
+		Map<String,LatLng> sortedLatLngs = readData();
+		
+		if(!readSucceed)return false;
+		
+		return createKMLPath(sortedLatLngs);
+		
+	}
+	
+	private class LatLng{
+		double lat,lng;
+		private LatLng(double _lat,double _lng){
+			lat=_lat;
+			lng = _lng;
+		}
+		public double getLat() {
+			return lat;
+		}
+		public double getLng() {
+			return lng;
+		}
+		@Override
+		public String toString() {
+			return "lat:"+lat+",Lng:"+lng;
+		}
+		
+	}
+	
+	private Map<String,LatLng> readData(){
 		Map<String,LatLng> sortedLatLngs = new TreeMap<String,LatLng>();
 		try {
 			JSONObject jsonHistory = JsonReader.readJsonFromUrl(URL);
@@ -47,14 +76,14 @@ public class GetPathKML {
 		catch (Exception e) {
 			 readSucceed=false;
 		}
-		
-		if(!readSucceed)return false;
-		
+		return sortedLatLngs;
+	}
+
+	private boolean createKMLPath(Map<String,LatLng> sortedLatLngs){
 		Iterator<Map.Entry<String, LatLng>> i = sortedLatLngs.entrySet().iterator();
 		Map.Entry<String, LatLng> entry = (Map.Entry<String, LatLng>) i.next();
 		
 		Kml kml = new Kml();
-
 		Document doc = kml.createAndSetDocument();
 		doc.setName("Path");
 		doc.setDescription("Event# : "+event+" , Sailor : "+user);
@@ -110,29 +139,9 @@ public class GetPathKML {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
 		return true;
-		
-	}
-	
-	private class LatLng{
-		double lat,lng;
-		private LatLng(double _lat,double _lng){
-			lat=_lat;
-			lng = _lng;
-		}
-		public double getLat() {
-			return lat;
-		}
-		public double getLng() {
-			return lng;
-		}
-		
-		@Override
-		public String toString() {
-			return "lat:"+lat+",Lng:"+lng;
-		}
-		
 	}
 
 	public void setEvent(String event) {

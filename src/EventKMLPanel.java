@@ -10,7 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
 
-import serverconnect.GetPathKML;
+import serverconnect.KMLgenerator;
 
 
 public class EventKMLPanel extends JPanel implements ActionListener{
@@ -58,34 +58,30 @@ public class EventKMLPanel extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		boolean succeed=false;
-		String URL = historyURL;
 		String event = eventTxt.getText().replaceAll("\\s","");
 		String user = userTxt.getText().replaceAll("\\s","");
-		String path;
+		String URL = historyURL+"&Event="+event+"&User=Sailor"+user;;
+		String path = chooseFile();
+		KMLgenerator g = new KMLgenerator(URL,path);
+		g.setEvent(event);
+		g.setUser(user);
 		if(e.getActionCommand().equals(createKmlTimebtn.getText())){
 			
 		}else{
-			path = chooseFile();
-			URL+= "&Event="+event+"&User=Sailor"+user;
-			//System.out.println(URL);
-			
-			GetPathKML g = new GetPathKML(URL,path);
-			g.setEvent(event);
-			g.setUser(user);
-			succeed = g.getData();
+			succeed = g.createKMLPath();
 		}
 		
 		if(succeed){
-			final String message = "\"KML Creation Succeed!\"\n";
+			final String message = "KML Creation Succeed!\n";
 			    JOptionPane.showMessageDialog(new JFrame(), message, "Dialog",
 			        JOptionPane.INFORMATION_MESSAGE);
 		}else{
-			final String message = "\"KML Creation Fail!\"\n"
+			final String message = "KML Creation Fail!\n"
 			        + "Please Cheack Infornation Entered\n";
 			    JOptionPane.showMessageDialog(new JFrame(), message, "Dialog",
 			        JOptionPane.ERROR_MESSAGE);
 		}
-		System.exit(0);
+		//System.exit(0);
 	}
 	
 	private String chooseFile(){
