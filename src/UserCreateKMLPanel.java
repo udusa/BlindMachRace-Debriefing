@@ -10,24 +10,25 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
 
-import serverconnect.KMLgenerator;
+import serverconnect.KMLgeneratorPerUser;
 
 
-public class EventKMLPanel extends JPanel implements ActionListener{
+public class UserCreateKMLPanel extends JPanel implements ActionListener{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JTextField eventTxt;
-	private JLabel eventLbl;
-	private JButton createKmlTimebtn,createKmlPathbtn;
-	private String historyURL = "http://bmr.comuv.com/androidGetKmlEvent.php?Table=history";
-	private JTextField userTxt;
-	private JLabel userLbl;
+	protected JTextField eventTxt;
+	protected JLabel eventLbl;
+	protected JButton createKmlTimebtn,createKmlPathbtn;
+	final protected String historyURL = "http://bmr.comuv.com/androidGetKml.php?Table=history";
+	final private String buoysURL="http://bmr.comuv.com/androidGetBuoys.php?Table=events&Event=";
+	protected JTextField userTxt;
+	protected JLabel userLbl;
 	/**
 	 * Create the panel.
 	 */
-	public EventKMLPanel() {
+	public UserCreateKMLPanel() {
 		setLayout(null);
 		
 		eventTxt = new JTextField();
@@ -64,9 +65,10 @@ public class EventKMLPanel extends JPanel implements ActionListener{
 		boolean succeed=false;
 		String event = eventTxt.getText().replaceAll("\\s","");
 		String user = userTxt.getText().replaceAll("\\s","");
-		String URL = historyURL+"&Event="+event+"&User=Sailor"+user;;
+		String hURL = historyURL+"&Event="+event+"&User=Sailor"+user;
+		String bURL = buoysURL+"&Event="+event;
 		String path = chooseFile();
-		KMLgenerator g = new KMLgenerator(URL,path);
+		KMLgeneratorPerUser g = new KMLgeneratorPerUser(hURL,path,bURL);
 		g.setEvent(event);
 		g.setUser(user);
 		if(e.getActionCommand().equals(createKmlTimebtn.getText())){
@@ -89,7 +91,7 @@ public class EventKMLPanel extends JPanel implements ActionListener{
 		
 	}
 	
-	private String chooseFile(){
+	protected String chooseFile(){
 		String path=null;
 		JFileChooser chooser = new JFileChooser();
 		chooser.setCurrentDirectory(new java.io.File("."));
@@ -102,4 +104,39 @@ public class EventKMLPanel extends JPanel implements ActionListener{
 		}
 		return path;
 	}
+
+	public JTextField getEventTxt() {
+		return eventTxt;
+	}
+
+	public JLabel getEventLbl() {
+		return eventLbl;
+	}
+
+	public JButton getCreateKmlTimebtn() {
+		return createKmlTimebtn;
+	}
+
+	public JButton getCreateKmlPathbtn() {
+		return createKmlPathbtn;
+	}
+
+	public String getHistoryURL() {
+		return historyURL;
+	}
+
+	public String getBuoysURL() {
+		return buoysURL;
+	}
+
+	public JTextField getUserTxt() {
+		return userTxt;
+	}
+
+	public JLabel getUserLbl() {
+		return userLbl;
+	}
+	
+	
+	
 }
