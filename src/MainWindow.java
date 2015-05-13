@@ -1,6 +1,9 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -42,9 +45,12 @@ public class MainWindow extends JFrame {
 	 */
 	public MainWindow() {
 		//Frame
+		setTitle("BlindMachRace-Debriefing");
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		setResizable(false);
+		setIconImage((new ImageIcon("img/ic_launcher.png")).getImage());
 		//MainPanel
 		mainContent = new JPanel();
 		mainContent.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -55,5 +61,4 @@ public class MainWindow extends JFrame {
 		mainContent.add(tabs);
 		
 	}
-
 }

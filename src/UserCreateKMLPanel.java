@@ -1,6 +1,9 @@
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -38,15 +41,16 @@ public class UserCreateKMLPanel extends JPanel implements ActionListener{
 		
 		eventLbl = new JLabel("Event # :",SwingConstants.CENTER);
 		eventLbl.setBounds(140, 11, 150, 10);
+		eventLbl.setForeground(Color.WHITE);
 		add(eventLbl);
 		
 		createKmlTimebtn = new JButton("Create KML File (Time Strap)");
-		createKmlTimebtn.setBounds(41, 195, 170, 25);
+		createKmlTimebtn.setBounds(10, 180, 200, 25);
 		createKmlTimebtn.addActionListener(this);
 		add(createKmlTimebtn);
 		
 		createKmlPathbtn = new JButton("Create KML File (Path Only)");
-		createKmlPathbtn.setBounds(221, 195, 170, 25);
+		createKmlPathbtn.setBounds(221, 180, 200, 25);
 		createKmlPathbtn.addActionListener(this);
 		add(createKmlPathbtn);
 		
@@ -55,9 +59,16 @@ public class UserCreateKMLPanel extends JPanel implements ActionListener{
 		userTxt.setBounds(140, 102, 150, 30);
 		add(userTxt);
 		
-		userLbl = new JLabel("User # :", SwingConstants.CENTER);
+		userLbl = new JLabel("User :", SwingConstants.CENTER);
 		userLbl.setBounds(140, 86, 150, 10);
+		userLbl.setForeground(Color.WHITE);
 		add(userLbl);
+	}
+	
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.drawImage((new ImageIcon("img/app_bg.jpg")).getImage(), 0, 0, null);
 	}
 
 	@Override

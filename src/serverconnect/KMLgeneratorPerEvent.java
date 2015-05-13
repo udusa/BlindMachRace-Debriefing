@@ -43,7 +43,7 @@ public class KMLgeneratorPerEvent extends KMLgeneratorPerUser {
 		
 		Kml kml = new Kml();
 		Document doc = kml.createAndSetDocument();
-		doc.setName("Path");
+		doc.setName("TimeStamp");
 		doc.setDescription("Event# : " + getEvent());
 		
 		// buoysStyle
@@ -62,6 +62,7 @@ public class KMLgeneratorPerEvent extends KMLgeneratorPerUser {
 			String userName = userEntry.getKey().getUser();
 			timeMarks = doc.createAndAddPlacemark();
 			timeMarks.setName(userName);
+			createPlacemarkDescription(timeMarks,userEntry);
 			when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime()
 					+ "Z";
 			timeMarks.createAndSetTimeStamp().setWhen(when);

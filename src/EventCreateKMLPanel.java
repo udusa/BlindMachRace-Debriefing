@@ -4,7 +4,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import serverconnect.KMLgeneratorPerEvent;
-import serverconnect.KMLgeneratorPerUser;
 
 
 public class EventCreateKMLPanel extends UserCreateKMLPanel {
@@ -12,12 +11,17 @@ public class EventCreateKMLPanel extends UserCreateKMLPanel {
 	
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public EventCreateKMLPanel() {
 		super();
 		userTxt.setVisible(false);
 		userLbl.setVisible(false);
 		createKmlPathbtn.setVisible(false);
-		createKmlTimebtn.setBounds(130, 195, 170, 25);
+		createKmlTimebtn.setBounds(115, 180, 200, 25);
 		
 	}
 	

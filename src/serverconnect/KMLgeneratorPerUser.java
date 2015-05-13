@@ -25,6 +25,12 @@ import de.micromata.opengis.kml.v_2_2_0.Style;
 
 public class KMLgeneratorPerUser {
 	private String historyURL, eventURL, path, event, user;
+	
+	final private String sailorSpeedStr = "Sailor Speed : ";
+	final private String sailorDirectionStr = "\nSailor Direction : ";
+	final private String windSpeedStr = "\nWind Speed: ";
+	final private String windDegStr = "\nWind Degree: ";
+	
 	private boolean readSucceed;
 	private ArrayList<String> users;
 
@@ -64,7 +70,13 @@ public class KMLgeneratorPerUser {
 				JSONObject jsonObj = (JSONObject) jsonArray.get(i);
 				String lat = jsonObj.getString("lat");
 				String lng = jsonObj.getString("lng");
-				String user = jsonObj.getString("user");
+				String user = jsonObj.getString("user").substring(6);
+				
+				String windSp = jsonObj.getString("windSpeed");
+				String windD = jsonObj.getString("windDeg");
+				String sailorSp = jsonObj.getString("speed");
+				String sailoeDir = jsonObj.getString("azimuth");
+				
 				if(!users.contains(user)){
 					users.add(user);
 				}
@@ -75,10 +87,10 @@ public class KMLgeneratorPerUser {
 				String time = jsonObj.getString("time");
 				String date = jsonObj.getString("date");
 
-				LatLng latLng = new LatLng(Double.parseDouble(lat),
-						Double.parseDouble(lng));
-				EventDate eventDate = new EventDate(time, date,user);
+				LatLng latLng = new LatLng(Double.parseDouble(lat),Double.parseDouble(lng));
+				EventDate eventDate = new EventDate(time, date,user,windSp,windD,sailorSp,sailoeDir);
 				sortedLatLngs.put(eventDate, latLng);
+				System.out.println(eventDate);
 			}
 
 		} catch (Exception e) {
@@ -131,10 +143,8 @@ public class KMLgeneratorPerUser {
 	
 	
 	private boolean createKMLPath(Map<EventDate, LatLng> sortedLatLngs,Map<String, LatLng> buoysLatLng) {
-		Iterator<Map.Entry<EventDate, LatLng>> i = sortedLatLngs.entrySet()
-				.iterator();
-		Map.Entry<EventDate, LatLng> entry = (Map.Entry<EventDate, LatLng>) i
-				.next();
+		Iterator<Map.Entry<EventDate, LatLng>> i = sortedLatLngs.entrySet().iterator();
+		Map.Entry<EventDate, LatLng> entry = (Map.Entry<EventDate, LatLng>) i.next();
 		
 		Iterator<Map.Entry<String, LatLng>> buoyIterator = buoysLatLng.entrySet().iterator();
 		Map.Entry<String, LatLng> buoyEntry = (Map.Entry<String, LatLng>)buoyIterator.next();
@@ -173,33 +183,33 @@ public class KMLgeneratorPerUser {
 
 		// Start placemark
 		doc.createAndAddPlacemark()
-				.withName("FROM")
+				.withName("From")
 				.withStyleUrl("#" + style3.getId())
 				.createAndSetPoint()
 				.addToCoordinates(entry.getValue().getLng(),
 						entry.getValue().getLat());
 
 		Placemark pathMarks = doc.createAndAddPlacemark();
-		pathMarks.setName("PATH");
+		pathMarks.setName("Path");
 		pathMarks.setStyleUrl("#" + style2.getId());
-		pathMarks.createAndSetExtendedData().createAndAddData("true")
-				.setName("_SnapToRoads");
+		pathMarks.createAndSetExtendedData().createAndAddData("true").setName("_SnapToRoads");
 		LineString lineString = pathMarks.createAndSetLineString();
 		lineString.setTessellate(true);
 
 		while (i.hasNext()) {
-			entry = (Map.Entry<EventDate, LatLng>) i.next();
 			/*
 			 * System.out.println(); System.out.print(entry.getKey()+",");
 			 * System.out.print(entry.getValue().getLat()+",");
 			 * System.out.print(entry.getValue().getLng());
 			 */
-			if (!i.hasNext())
-				break;
-			lineString.addToCoordinates(entry.getValue().getLng(), entry
-					.getValue().getLat());
+		//	if (!i.hasNext())
+		//		break;
+			lineString.addToCoordinates(entry.getValue().getLng(), entry.getValue().getLat());
+			entry = (Map.Entry<EventDate, LatLng>) i.next();
 
 		}
+		lineString.addToCoordinates(entry.getValue().getLng(), entry.getValue().getLat());
+		
 		while(buoyIterator.hasNext()){
 			pathMarks = doc.createAndAddPlacemark();
 			pathMarks.setStyleUrl("#" + buoysStyle.getId());
@@ -208,7 +218,7 @@ public class KMLgeneratorPerUser {
 		}
 		
 		doc.createAndAddPlacemark()
-				.withName("TO")
+				.withName("To")
 				.withStyleUrl("#" + style1.getId())
 				.createAndSetPoint()
 				.addToCoordinates(entry.getValue().getLng(),
@@ -264,7 +274,8 @@ public class KMLgeneratorPerUser {
 		ics3.createAndSetIcon().setHref("http://bmr.comuv.com/ic_user_sailor.png");
 
 		Placemark timeMarks = doc.createAndAddPlacemark();
-		timeMarks.setName("FROM");
+		timeMarks.setName("From");
+		createPlacemarkDescription(timeMarks,userEntry);
 		when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime() + "Z";
 		timeMarks.createAndSetTimeStamp().setWhen(when);
 		timeMarks.setStyleUrl("#" + style1.getId());
@@ -276,6 +287,7 @@ public class KMLgeneratorPerUser {
 			if (!useIterator.hasNext())
 				break;
 			timeMarks = doc.createAndAddPlacemark();
+			createPlacemarkDescription(timeMarks,userEntry);
 			when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime()
 					+ "Z";
 			timeMarks.createAndSetTimeStamp().setWhen(when);
@@ -294,7 +306,8 @@ public class KMLgeneratorPerUser {
 		
 
 		timeMarks = doc.createAndAddPlacemark();
-		timeMarks.setName("TO");
+		timeMarks.setName("To");
+		createPlacemarkDescription(timeMarks,userEntry);
 		when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime() + "Z";
 		timeMarks.createAndSetTimeStamp().setWhen(when);
 		timeMarks.setStyleUrl("#" + style3.getId());
@@ -311,6 +324,11 @@ public class KMLgeneratorPerUser {
 		}
 		return true;
 
+	}
+	
+	public void createPlacemarkDescription(Placemark mark,Map.Entry<EventDate, LatLng> userEntry){
+		EventDate data = userEntry.getKey();
+		mark.setDescription(sailorSpeedStr+data.sailorSp+sailorDirectionStr+data.getSailorDir()+windSpeedStr+data.getWindSp()+windDegStr+data.getWindD());
 	}
 
 	public void setEvent(String event) {
@@ -383,18 +401,37 @@ public class KMLgeneratorPerUser {
 	}
 
 	class EventDate implements Comparable<Object> {
-		String time, date,user;
+		private String time, date,user,windSp,windD,sailorSp,SailorDir;
 
 		EventDate(String _time, String _date) {
 			time = _time;
 			date = _date;
 		}
 		EventDate(String _time, String _date,String _user) {
-			time = _time;
-			date = _date;
+			this(_time,_date);
 			user=_user;
 		}
+		EventDate(String _time, String _date,String _user,String ws,String wd,String ss,String sd) {
+			this(_time,_date,_user);
+			windD=wd;
+			windSp=ws;
+			sailorSp=ss;
+			SailorDir=sd;
+		}
+		
 
+		public String getWindSp() {
+			return windSp;
+		}
+		public String getWindD() {
+			return windD;
+		}
+		public String getSailorSp() {
+			return sailorSp;
+		}
+		public String getSailorDir() {
+			return SailorDir;
+		}
 		public String getTime() {
 			return time;
 		}
@@ -408,7 +445,7 @@ public class KMLgeneratorPerUser {
 		@Override
 		public String toString() {
 
-			return "Time : " + time + " , Date : " + date;
+			return "Time : " + time + " , Date : " + date + ", User : "+user + " ,Wind Speed : "+windSp+", Wind Deg : "+windD + ", Sailor Speed : "+SailorDir + " , Sailor Direction : "+SailorDir;
 		}
 
 		@Override

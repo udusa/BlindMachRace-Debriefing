@@ -1,4 +1,3 @@
-import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 
@@ -11,8 +10,8 @@ public class Tabs extends JTabbedPane {
 
 	public Tabs(){
 		super();
-		this.add("Event KML", new UserCreateKMLPanel());
-		this.add("User KML", new EventCreateKMLPanel());
+		this.add("User KML", new UserCreateKMLPanel());
+		this.add("Event KML", new EventCreateKMLPanel());
 	}
 	
 	
