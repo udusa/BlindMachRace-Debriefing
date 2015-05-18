@@ -182,9 +182,12 @@ public class KMLgeneratorPerUser {
 				"http://bmr.comuv.com/ic_user_sailor.png");
 		ics2.setScale(1);
 
+		//Create start and finish
+		createStartFinishLines(sortedLatLngs, doc);
+		
 		// Start placemark
 		doc.createAndAddPlacemark()
-				.withName("From")
+				.withName("")
 				.withStyleUrl("#" + style3.getId())
 				.createAndSetPoint()
 				.addToCoordinates(entry.getValue().getLng(),
@@ -212,7 +215,7 @@ public class KMLgeneratorPerUser {
 		}
 		
 		doc.createAndAddPlacemark()
-				.withName("To")
+				.withName("")
 				.withStyleUrl("#" + style1.getId())
 				.createAndSetPoint()
 				.addToCoordinates(entry.getValue().getLng(),
@@ -266,9 +269,12 @@ public class KMLgeneratorPerUser {
 		IconStyle ics3 = style3.createAndSetIconStyle();
 		ics3.setScale(1);
 		ics3.createAndSetIcon().setHref("http://bmr.comuv.com/ic_user_sailor.png");
+		
+		//Create start and finish
+		createStartFinishLines(sortedLatLngs, doc);
 
 		Placemark timeMarks = doc.createAndAddPlacemark();
-		timeMarks.setName("From");
+		timeMarks.setName("");
 		createPlacemarkDescription(timeMarks,userEntry);
 		//when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime() + "Z";
 		when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime();
@@ -301,7 +307,7 @@ public class KMLgeneratorPerUser {
 		
 
 		timeMarks = doc.createAndAddPlacemark();
-		timeMarks.setName("To");
+		timeMarks.setName("");
 		createPlacemarkDescription(timeMarks,userEntry);
 		when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime() + "Z";
 		timeMarks.createAndSetTimeStamp().setWhen(when);
@@ -319,6 +325,46 @@ public class KMLgeneratorPerUser {
 		}
 		return true;
 
+	}
+	
+	protected void createStartFinishLines(Map<EventDate, LatLng> sortedLatLngs,Document doc){
+		Iterator<Map.Entry<EventDate, LatLng>> startFinishLines = sortedLatLngs.entrySet().iterator();
+		//start line style
+				Style startLine = doc.createAndAddStyle();
+				startLine.setId("startLine");
+				IconStyle icStart = startLine.createAndSetIconStyle();
+				icStart.setScale(3);
+				icStart.createAndSetIcon().setHref("http://bmr.comuv.com/flag_start2.png");
+				
+				//finish line style
+				Style finishLine = doc.createAndAddStyle();
+				finishLine.setId("finishLine");
+				IconStyle icFinish = finishLine.createAndSetIconStyle();
+				icFinish.setScale(3);
+				icFinish.createAndSetIcon().setHref("http://bmr.comuv.com/flag_finish2.png");
+				
+				//Line MARKS
+				
+				
+				Placemark lineMark = doc.createAndAddPlacemark();
+				Map.Entry<EventDate, LatLng> startFinishLinesEntry = (Map.Entry<EventDate, LatLng>) startFinishLines.next();
+				lineMark.setStyleUrl("#"+startLine.getId());
+				lineMark.setName("");
+				lineMark.setDescription("Start Line!");
+				lineMark.createAndSetPoint().addToCoordinates(startFinishLinesEntry.getValue().getLng(), startFinishLinesEntry.getValue().getLat());
+				
+				while(startFinishLines.hasNext()){
+					
+					startFinishLinesEntry = (Map.Entry<EventDate, LatLng>) startFinishLines.next();
+				}
+				
+				lineMark = doc.createAndAddPlacemark();
+				lineMark.setStyleUrl("#"+finishLine.getId());
+				lineMark.setName("");
+				lineMark.setDescription("Finish Line!");
+				lineMark.createAndSetPoint().addToCoordinates(startFinishLinesEntry.getValue().getLng(), startFinishLinesEntry.getValue().getLat());
+				
+				//USER MARKS
 	}
 	
 	public void createPlacemarkDescription(Placemark mark,Map.Entry<EventDate, LatLng> userEntry){

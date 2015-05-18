@@ -32,7 +32,7 @@ public class KMLgeneratorPerEvent extends KMLgeneratorPerUser {
 	@Override
 	protected boolean createKMLTimeStamp(Map<EventDate, LatLng> sortedLatLngs,
 		Map<String, LatLng> buoysLatLng) {
-		Iterator<Map.Entry<EventDate, LatLng>> startFinishLines = sortedLatLngs.entrySet().iterator();
+		
 		
 		
 		Iterator<Map.Entry<EventDate, LatLng>> useIterator = sortedLatLngs.entrySet().iterator();
@@ -47,24 +47,6 @@ public class KMLgeneratorPerEvent extends KMLgeneratorPerUser {
 		doc.setName("TimeStamp");
 		doc.setDescription("Event# : " + getEvent());
 		
-		//start line style
-		Style startLine = doc.createAndAddStyle();
-		startLine.setId("startLine");
-		IconStyle icStart = startLine.createAndSetIconStyle();
-		icStart.setScale(1);
-		icStart.createAndSetIcon().setHref("http://bmr.comuv.com/flag_start.png");
-		
-		//finish line style
-		Style finishLine = doc.createAndAddStyle();
-		finishLine.setId("finishLine");
-		IconStyle icFinish = finishLine.createAndSetIconStyle();
-		icFinish.setScale(1);
-		icFinish.createAndSetIcon().setHref("http://bmr.comuv.com/flag_finish.png");
-		
-		
-		
-		
-		
 		
 		// buoysStyle
 		Style buoysStyle = createBuoyStyle(doc);
@@ -75,17 +57,9 @@ public class KMLgeneratorPerEvent extends KMLgeneratorPerUser {
 			ics.setScale(1);
 			ics.createAndSetIcon().setHref("http://bmr.comuv.com/boats_icons/ic_sailor_"+i+".png");
 		}
-		//Line MARKS
 		
-		Placemark lineMark = doc.createAndAddPlacemark();
-		Map.Entry<EventDate, LatLng> startFinishLinesEntry = (Map.Entry<EventDate, LatLng>) startFinishLines.next();
-		lineMark.setStyleUrl("#"+startLine.getId());
-		lineMark.setName("Start Line!");
-		lineMark.setDescription("Start Line!");
-		lineMark.createAndSetPoint().addToCoordinates(startFinishLinesEntry.getValue().getLng(), startFinishLinesEntry.getValue().getLat());
-		
-		
-		//USER MARKS
+		//Create start and finish
+		createStartFinishLines(sortedLatLngs, doc);
 		
 		Placemark timeMarks = doc.createAndAddPlacemark();
 		
@@ -125,6 +99,8 @@ public class KMLgeneratorPerEvent extends KMLgeneratorPerUser {
 		return true;
 	
 	}
+	
+	
 	
 	
 
