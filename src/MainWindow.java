@@ -1,8 +1,5 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -50,7 +47,9 @@ public class MainWindow extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		setResizable(false);
-		setIconImage((new ImageIcon("img/ic_launcher.png")).getImage());
+		ImageIcon icon = new ImageIcon(getClass().getResource("img/ic_launcher.png"));
+		//setIconImage((new ImageIcon("img/ic_launcher.png")).getImage());
+		setIconImage(icon.getImage());
 		//MainPanel
 		mainContent = new JPanel();
 		mainContent.setBorder(new EmptyBorder(5, 5, 5, 5));

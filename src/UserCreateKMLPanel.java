@@ -68,7 +68,9 @@ public class UserCreateKMLPanel extends JPanel implements ActionListener{
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.drawImage((new ImageIcon("img/app_bg.jpg")).getImage(), 0, 0, null);
+		ImageIcon bgImage = new ImageIcon(getClass().getResource("img/app_bg.jpg"));
+		//g.drawImage((new ImageIcon("img/app_bg.jpg")).getImage(), 0, 0, null);
+		g.drawImage(bgImage.getImage(), 0, 0, null);
 	}
 
 	@Override

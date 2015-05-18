@@ -90,7 +90,6 @@ public class KMLgeneratorPerUser {
 				LatLng latLng = new LatLng(Double.parseDouble(lat),Double.parseDouble(lng));
 				EventDate eventDate = new EventDate(time, date,user,windSp,windD,sailorSp,sailoeDir);
 				sortedLatLngs.put(eventDate, latLng);
-				System.out.println(eventDate);
 			}
 
 		} catch (Exception e) {
@@ -197,13 +196,6 @@ public class KMLgeneratorPerUser {
 		lineString.setTessellate(true);
 
 		while (i.hasNext()) {
-			/*
-			 * System.out.println(); System.out.print(entry.getKey()+",");
-			 * System.out.print(entry.getValue().getLat()+",");
-			 * System.out.print(entry.getValue().getLng());
-			 */
-		//	if (!i.hasNext())
-		//		break;
 			lineString.addToCoordinates(entry.getValue().getLng(), entry.getValue().getLat());
 			entry = (Map.Entry<EventDate, LatLng>) i.next();
 
@@ -230,7 +222,7 @@ public class KMLgeneratorPerUser {
 					+ "_OnlyPath.kml");
 			kml.marshal(f);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -276,7 +268,8 @@ public class KMLgeneratorPerUser {
 		Placemark timeMarks = doc.createAndAddPlacemark();
 		timeMarks.setName("From");
 		createPlacemarkDescription(timeMarks,userEntry);
-		when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime() + "Z";
+		//when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime() + "Z";
+		when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime();
 		timeMarks.createAndSetTimeStamp().setWhen(when);
 		timeMarks.setStyleUrl("#" + style1.getId());
 		timeMarks.createAndSetPoint().addToCoordinates(
@@ -288,8 +281,8 @@ public class KMLgeneratorPerUser {
 				break;
 			timeMarks = doc.createAndAddPlacemark();
 			createPlacemarkDescription(timeMarks,userEntry);
-			when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime()
-					+ "Z";
+			//when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime()+ "Z";
+			when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime();
 			timeMarks.createAndSetTimeStamp().setWhen(when);
 			timeMarks.setStyleUrl("#" + style2.getId());
 			timeMarks.createAndSetPoint().addToCoordinates(
@@ -319,7 +312,7 @@ public class KMLgeneratorPerUser {
 			File f = new File(path + "/" + event + "_" + user + "_" + timeStamp+ "_WithTimeStamp.kml");
 			kml.marshal(f);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			return false;
 		}
 		return true;

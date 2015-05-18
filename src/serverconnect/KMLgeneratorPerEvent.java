@@ -12,8 +12,6 @@ import de.micromata.opengis.kml.v_2_2_0.IconStyle;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.Style;
-import serverconnect.KMLgeneratorPerUser.EventDate;
-import serverconnect.KMLgeneratorPerUser.LatLng;
 
 public class KMLgeneratorPerEvent extends KMLgeneratorPerUser {
 
