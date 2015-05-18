@@ -31,6 +31,8 @@ public class KMLgeneratorPerUser {
 	final private String windSpeedStr = "\nWind Speed: ";
 	final private String windDegStr = "\nWind Degree: ";
 	
+	
+	
 	private boolean readSucceed;
 	private ArrayList<String> users;
 
