@@ -246,7 +246,7 @@ public class KMLgeneratorPerUser {
 
 		Kml kml = new Kml();
 		Document doc = kml.createAndSetDocument();
-		doc.setName("Path");
+		doc.setName("TimeStamp");
 		doc.setDescription("Event# : " + event + " , Sailor : " + user);
 
 		// buoysStyle
@@ -277,7 +277,7 @@ public class KMLgeneratorPerUser {
 		createStartFinishLines(sortedLatLngs, doc);
 
 		Placemark timeMarks = doc.createAndAddPlacemark();
-		timeMarks.setName("");
+		timeMarks.setName(userEntry.getKey().getUser());
 		createPlacemarkDescription(timeMarks,userEntry);
 		//when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime() + "Z";
 		when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime();
@@ -291,6 +291,7 @@ public class KMLgeneratorPerUser {
 			if (!useIterator.hasNext())
 				break;
 			timeMarks = doc.createAndAddPlacemark();
+			timeMarks.setName(userEntry.getKey().getUser());
 			createPlacemarkDescription(timeMarks,userEntry);
 			//when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime()+ "Z";
 			when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime();
@@ -299,10 +300,11 @@ public class KMLgeneratorPerUser {
 			timeMarks.createAndSetPoint().addToCoordinates(
 					userEntry.getValue().getLng(), userEntry.getValue().getLat());
 		}
-		
+		int bi=3;
 		while(buoyIterator.hasNext()){
 			buoyEntry = (Map.Entry<String, LatLng>)buoyIterator.next();
 			timeMarks = doc.createAndAddPlacemark();
+			timeMarks.setName("BuoyNum "+(bi--));
 			timeMarks.setStyleUrl("#" + buoysStyle.getId());
 			timeMarks.createAndSetPoint().addToCoordinates(
 					buoyEntry.getValue().getLng(), buoyEntry.getValue().getLat());
@@ -311,7 +313,7 @@ public class KMLgeneratorPerUser {
 		
 
 		timeMarks = doc.createAndAddPlacemark();
-		timeMarks.setName("");
+		timeMarks.setName(userEntry.getKey().getUser());
 		createPlacemarkDescription(timeMarks,userEntry);
 		when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime() + "Z";
 		timeMarks.createAndSetTimeStamp().setWhen(when);
