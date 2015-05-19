@@ -107,7 +107,7 @@ public class KMLgeneratorPerUser {
 			JSONObject json = JsonReader.readJsonFromUrl(eventURL);
 			JSONArray jsonArray = json.getJSONArray("positions");
 			JSONObject jsonObj = (JSONObject) jsonArray.get(0);
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 3; i++) {
 				String blat = "b" + (i + 1) + "lat";
 				String blng = "b" + (i + 1) + "lng";
 				String buoyName = "buoy#" + (i + 1);
@@ -148,7 +148,7 @@ public class KMLgeneratorPerUser {
 		Map.Entry<EventDate, LatLng> entry = (Map.Entry<EventDate, LatLng>) i.next();
 		
 		Iterator<Map.Entry<String, LatLng>> buoyIterator = buoysLatLng.entrySet().iterator();
-		Map.Entry<String, LatLng> buoyEntry = (Map.Entry<String, LatLng>)buoyIterator.next();
+		Map.Entry<String, LatLng> buoyEntry;// = (Map.Entry<String, LatLng>)buoyIterator.next();
 
 		Kml kml = new Kml();
 		Document doc = kml.createAndSetDocument();
@@ -207,11 +207,14 @@ public class KMLgeneratorPerUser {
 		}
 		lineString.addToCoordinates(entry.getValue().getLng(), entry.getValue().getLat());
 		
+		int bi=3;
 		while(buoyIterator.hasNext()){
+			buoyEntry = (Map.Entry<String, LatLng>)buoyIterator.next();
 			pathMarks = doc.createAndAddPlacemark();
 			pathMarks.setStyleUrl("#" + buoysStyle.getId());
+			pathMarks.setName("BuoyNum "+(bi--));
 			pathMarks.createAndSetPoint().addToCoordinates(buoyEntry.getValue().getLng(), buoyEntry.getValue().getLat());
-			buoyEntry = (Map.Entry<String, LatLng>)buoyIterator.next();
+			
 		}
 		
 		doc.createAndAddPlacemark()
@@ -238,7 +241,7 @@ public class KMLgeneratorPerUser {
 		Map.Entry<EventDate, LatLng> userEntry = (Map.Entry<EventDate, LatLng>) useIterator.next();
 		
 		Iterator<Map.Entry<String, LatLng>> buoyIterator = buoysLatLng.entrySet().iterator();
-		Map.Entry<String, LatLng> buoyEntry = (Map.Entry<String, LatLng>)buoyIterator.next();
+		Map.Entry<String, LatLng> buoyEntry;// = (Map.Entry<String, LatLng>)buoyIterator.next();
 		String when = "";
 
 		Kml kml = new Kml();
@@ -298,11 +301,12 @@ public class KMLgeneratorPerUser {
 		}
 		
 		while(buoyIterator.hasNext()){
+			buoyEntry = (Map.Entry<String, LatLng>)buoyIterator.next();
 			timeMarks = doc.createAndAddPlacemark();
 			timeMarks.setStyleUrl("#" + buoysStyle.getId());
 			timeMarks.createAndSetPoint().addToCoordinates(
 					buoyEntry.getValue().getLng(), buoyEntry.getValue().getLat());
-			buoyEntry = (Map.Entry<String, LatLng>)buoyIterator.next();
+			
 		}
 		
 

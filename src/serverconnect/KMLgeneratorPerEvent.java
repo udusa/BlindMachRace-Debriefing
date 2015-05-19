@@ -24,6 +24,7 @@ public class KMLgeneratorPerEvent extends KMLgeneratorPerUser {
 	public boolean createKMLTimeStamp() {
 		Map<EventDate, LatLng> sortedLatLngs = super.readData();
 		Map<String, LatLng> buoysLatLng = super.readBuoys();
+		
 		if(!isReadSucceed())return false;
 		return this.createKMLTimeStamp(sortedLatLngs,buoysLatLng);
 	}
@@ -36,12 +37,12 @@ public class KMLgeneratorPerEvent extends KMLgeneratorPerUser {
 		
 		
 		Iterator<Map.Entry<EventDate, LatLng>> useIterator = sortedLatLngs.entrySet().iterator();
-		Map.Entry<EventDate, LatLng> userEntry = (Map.Entry<EventDate, LatLng>) useIterator.next();
+		Map.Entry<EventDate, LatLng> userEntry;// = (Map.Entry<EventDate, LatLng>) useIterator.next();
 		
 		Iterator<Map.Entry<String, LatLng>> buoyIterator = buoysLatLng.entrySet().iterator();
-		Map.Entry<String, LatLng> buoyEntry = (Map.Entry<String, LatLng>)buoyIterator.next();
-		String when = "";
+		Map.Entry<String, LatLng> buoyEntry;
 		
+		String when = "";
 		Kml kml = new Kml();
 		Document doc = kml.createAndSetDocument();
 		doc.setName("TimeStamp");
@@ -64,28 +65,27 @@ public class KMLgeneratorPerEvent extends KMLgeneratorPerUser {
 		Placemark timeMarks = doc.createAndAddPlacemark();
 		
 		
-		
 		while (useIterator.hasNext()) {
+			userEntry = (Map.Entry<EventDate, LatLng>) useIterator.next();
 			String userName = userEntry.getKey().getUser();
 			timeMarks = doc.createAndAddPlacemark();
 			timeMarks.setName(userName);
 			createPlacemarkDescription(timeMarks,userEntry);
-			when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime()
-					+ "Z";
+			when = userEntry.getKey().getDate() + "T" + userEntry.getKey().getTime();
 			timeMarks.createAndSetTimeStamp().setWhen(when);
 			timeMarks.setStyleUrl("#style" + getUserIndex(userName));
-			timeMarks.createAndSetPoint().addToCoordinates(
-					userEntry.getValue().getLng(), userEntry.getValue().getLat());
+			timeMarks.createAndSetPoint().addToCoordinates(userEntry.getValue().getLng(), userEntry.getValue().getLat());
 			
-			userEntry = (Map.Entry<EventDate, LatLng>) useIterator.next();
+			
 		}
-		
+		int i=3;
 		while(buoyIterator.hasNext()){
+			buoyEntry = (Map.Entry<String, LatLng>) buoyIterator.next();
 			timeMarks = doc.createAndAddPlacemark();
 			timeMarks.setStyleUrl("#" + buoysStyle.getId());
+			timeMarks.setName("BuoyNum "+(i--));
 			timeMarks.createAndSetPoint().addToCoordinates(
 					buoyEntry.getValue().getLng(), buoyEntry.getValue().getLat());
-			buoyEntry = (Map.Entry<String, LatLng>)buoyIterator.next();
 		}
 		try {
 			String timeStamp = new SimpleDateFormat("ddMMyy_HHmmss").format(new Date());
